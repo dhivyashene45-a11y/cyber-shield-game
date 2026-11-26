@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyber Shield Game</title>
+<style>
+:root{--bg:#0b1530;--card:#16244a;--text:#f3f7ff;--mute:#a9b8da;--accent:#38e1ff;--green:#1f9d55;--yellow:#f2c230;--red:#d93a45}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:18px;line-height:1.45}
+header,main{max-width:980px;margin:auto;padding:14px 16px}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+h1{font-size:2rem;margin:.3em 0}h2{margin:.2em 0 .5em}
+button,input,select{font:inherit;border-radius:10px;border:2px solid #3b518c;padding:10px 16px;background:#223564;color:var(--text)}
+button{cursor:pointer;font-weight:600}button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #fff}
+button:disabled{opacity:.55;cursor:default}
+.primary{background:var(--accent);color:#06203a;border-color:var(--accent)}
+.card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.tile{text-align:left;min-height:110px}.tile small{display:block;color:var(--mute);font-weight:400}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+.stack{display:grid;gap:10px;margin:12px 0}.stack button{text-align:left}
+.big{font-size:1.5rem;font-weight:700}.mute{color:var(--mute)}
+.timer{font-size:1.8rem;font-weight:800;font-variant-numeric:tabular-nums;min-width:90px}
+.g{background:var(--green)!important}.y{background:var(--yellow)!important;color:#241b00!important}.r{background:var(--red)!important}
+.sel{border-color:#fff;box-shadow:0 0 0 3px #fff}
+.ok{outline:4px solid #4dff9a}.no{outline:4px solid #ff6b76}
+.pic{width:100%;max-height:55vh;object-fit:contain;background:#000;border-radius:12px}
+.score{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #31467c}
+input[type=file]{max-width:100%}
+.mono{font-family:ui-monospace,Consolas,monospace;word-break:break-all}
+meter{width:100%;height:24px}
+</style>
+</head>
+<body>
+<header>
+  <button onclick="go('home')">🛡️ Cyber Shield</button>
+  <div class="row"><button onclick="go('scores')">🏆 Scores</button><button id="snd" onclick="toggleSound()">🔊 Sound on</button></div>
+</header>
+<main id="app"></main>
+<script>
+/* ===== EDIT YOUR PICTURES HERE =====
+   Put files in an "images" folder, then add one line per picture, for example:
+   {src:"images/01.jpg", answer:"REAL", clue:"Photo taken by our team"},
+   {src:"images/02.jpg", answer:"AI",   clue:"Made with an AI image tool"},            */
+let PICTURES = [
+];
+
+const TRAFFIC = [
+ ["Using a strong password",["g"],"It helps protect your account."],
+ ["Accepting a friend request from a stranger",["y","r"],"You do not know who is really behind the account."],
+ ["Sharing your home address online",["r"],"Strangers could find out where you live."],
+ ["Asking a parent before downloading an app",["g"],"A trusted adult can check that it is safe."],
+ ["Clicking an unknown link that promises free prizes",["r"],"It could be a scam or harmful website."],
+ ["Using AI to help explain homework",["g"],"Fine when used responsibly and honestly. Check the answers."],
+ ["Sharing your password with your best friend",["r"],"Passwords stay private, even from friends."],
+ ["Posting a photo in school uniform with your school name visible",["r"],"It shows strangers where you study."]
+];
+const CARDS = [["123456","w"],["password","w"],["qwerty","w"],["Ali123","w"],["Birthday2015","w"],["BlueTiger!River82","s"],["Pizza_Moon!47","s"],["Football2020","w"]];
+const WHY = [
+ ["Aisyah2014",["It uses a name and a year that may be easy to find out","It has a capital letter","It has numbers"],0],
+ ["11111111",["It has eight characters","It repeats one number, so it is easy to guess","It has no spaces"],1],
+ ["iloveyou",["It is written in English","It has no picture","It is a very common phrase"],2]
+];
+const STRANGER = [
+ ["Someone you met in an online game asks you to join a private chat and says not to tell your parents.",["Join the chat because they seem friendly.","Tell them your personal information.","Stop the conversation and tell a trusted adult."],2],
+ ["Someone messages: “I can give you 10,000 free game coins! Just send me your password.”",["Send your password.","Ignore, block and report the account, and tell an adult.","Ask for more free coins."],1],
+ ["Someone online asks which school you attend.",["Tell them your school.","Share a school photo.","Do not share it, and get help if they keep asking."],2],
+ ["An online friend asks you to meet them at a shopping mall.",["Go alone.","Tell a parent or trusted adult, and never arrange to meet an online stranger alone.","Ask your friend to come with you."],1]
+];
+const ESCAPE = [
+ ["Password Puzzle: which is the strongest password?",["abc12345","Siti2015","Green!Kite_Jumps93","password1"],2,3],
+ ["Stranger Puzzle: an online stranger asks for your photo. What do you do?",["Send one photo only","Say no, block them and tell a trusted adult","Ask for their photo first","Keep it a secret"],1,5],
+ ["Digital Safety Puzzle: which should you NOT share online?",["Favourite colour","Favourite cartoon","Home address","A food you like"],2,8]
+];
+const GAMES = [["ai","🖼️ AI or Real?","Mystery Picture Challenge · 12 min"],["traffic","🚦 Human Traffic Light","Safe or unsafe? · 12 min"],["password","🔐 Password Master","Three rounds · 12 min"],["stranger","🕵️ Stranger Danger","What would you do? · 12 min"],["escape","🔓 Cyber Safety Escape","Unlock the shield · 8 min"],["pledge","🤝 Safety Pledge","Closing · 5 min"]];
+
+const KEY="cyberShield";
+let S={teams:["Team 1","Team 2","Team 3","Team 4"],scores:[0,0,0,0],done:{}};
+try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&v.teams)S=v}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const app=$("app");
+
+let sound=true,actx=null;
+function beep(f=660,d=.12){if(!sound)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+function toggleSound(){sound=!sound;$("snd").textContent=sound?"🔊 Sound on":"🔇 Sound off"}
+
+let tick=null,left=0,endHook=null;
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+function stop(){clearInterval(tick);tick=null}
+function showTime(){if($("time"))$("time").textContent=fmt(left)}
+function start(){if(tick||left<=0)return;const end=Date.now()+left*1000;tick=setInterval(()=>{const n=Math.max(0,Math.ceil((end-Date.now())/1000));if(n===left)return;left=n;showTime();if(n<=10&&n>0)beep(880,.07);if(!n){stop();beep(220,.7);if(endHook)endHook()}},200)}
+function setTimer(s){stop();left=s;showTime()}
+const timerBar=s=>`<div class="row"><span class="timer" id="time">${fmt(s)}</span><button onclick="start()">▶ Start</button><button onclick="stop()">⏸ Pause</button><button onclick="setTimer(${s})">↺ Reset</button></div>`;
+
+/* add points once per key, so a double tap cannot score twice */
+function award(i,pts,key,btn){if(key){if(S.done[key])return false;S.done[key]=1}S.scores[i]+=pts;save();beep(990);if(btn)btn.disabled=true;return true}
+const awardRow=(prefix,pts,label="Give points to correct teams")=>`<p class="mute">${label} (+${pts})</p><div class="row">${S.teams.map((t,i)=>`<button ${S.done[prefix+"-"+i]?"disabled":""} onclick="award(${i},${pts},'${prefix}-${i}',this)">${esc(t)}</button>`).join("")}</div>`;
+
+let n=0,votes={},shown=false,phase=1,sorted={},digits=[],team=0;
+function go(v){stop();endHook=null;n=0;votes={};shown=false;phase=1;sorted={};digits=[];VIEWS[v]()}
+const page=(title,body,secs)=>{app.innerHTML=`<h2>${title}</h2>${secs?timerBar(secs):""}${body}`;if(secs){if(!tick)left=left||secs;showTime()}};
+/* redraw without restarting the activity timer */
+function frame(id,title,body,secs){if(app.dataset.v!==id||!$("body")){app.dataset.v=id;left=secs;app.innerHTML=`<h2>${title}</h2>${timerBar(secs)}<div id="body"></div>`}$("body").innerHTML=body}
+const nav=(fn,total)=>`<div class="row"><button ${n?"":"disabled"} onclick="step(-1,'${fn}')">← Back</button><span>${n+1} / ${total}</span><button class="primary" onclick="${n<total-1?`step(1,'${fn}')`:"go('scores')"}">${n<total-1?"Next →":"See scores"}</button></div>`;
+function step(d,fn){n+=d;votes={};shown=false;VIEWS[fn](true)}
+function open_(v){app.dataset.v="";go(v)}
+
+const VIEWS={
+home(){app.dataset.v="";app.innerHTML=`<h1>Cyber Shield</h1><p>AI &amp; Online Safety Awareness. Listen, play and protect yourself online!</p><div class="grid">${GAMES.map(g=>`<button class="tile" onclick="open_('${g[0]}')">${g[1]}<small>${g[2]}</small></button>`).join("")}</div><p class="mute">Facilitator tip: set up team names in Scores before you start.</p>`},
+
+scores(){app.dataset.v="";const order=S.teams.map((t,i)=>i).sort((a,b)=>S.scores[b]-S.scores[a]);page("🏆 Scoreboard",`<div class="card">${order.map(i=>`<div class="score"><input aria-label="Team name" maxlength="24" value="${esc(S.teams[i])}" onchange="S.teams[${i}]=this.value.trim()||'Team ${i+1}';save()"><span class="big">${S.scores[i]}</span><span><button onclick="S.scores[${i}]--;save();VIEWS.scores()">−1</button> <button onclick="S.scores[${i}]++;save();VIEWS.scores()">+1</button></span></div>`).join("")}</div><div class="row"><button onclick="addTeam()">+ Add team</button><button onclick="removeTeam()">− Remove last team</button><button class="r" onclick="resetAll()">Reset scores</button></div><p class="mute">Scores are saved on this device only.</p>`)},
+
+ai(r){if(!r)app.dataset.v="";if(!PICTURES.length){frame("ai","🖼️ AI or Real?",`<div class="card"><p>No pictures yet. Choose 8–10 pictures from this device to play now, or add them to the code for GitHub (see README).</p><p>Start each file name with <b>ai</b> or <b>real</b>, for example <span class="mono">ai-cat.jpg</span> or <span class="mono">real-beach.jpg</span>.</p><input type="file" accept="image/*" multiple onchange="loadPics(this.files)"></div>`,720);return}const p=PICTURES[n];frame("ai","🖼️ AI or Real?",`<div class="card"><img class="pic" src="${esc(p.src)}" alt="Mystery picture ${n+1}"><div class="row"><button onclick="lookTimer(this)">👀 10-second look</button><span class="big" id="look"></span></div>${S.teams.map((t,i)=>`<div class="score"><span>${esc(t)}</span><span>${["AI","REAL"].map(a=>`<button ${shown?"disabled":""} class="${votes[i]===a?"sel":""}" onclick="votes[${i}]='${a}';VIEWS.ai(true)">${a}</button>`).join(" ")}</span></div>`).join("")}<div class="row"><button class="primary" ${shown?"disabled":""} onclick="revealAI()">Reveal answer</button></div>${shown?`<p class="big">Answer: ${esc(p.answer)}</p><p>${esc(p.clue||"")}</p><p>💡 AI pictures can look very real. Think before you believe. Check before you share.</p>`:""}</div>${nav("ai",PICTURES.length)}`,720)},
+
+traffic(r){if(!r)app.dataset.v="";const q=TRAFFIC[n],L={g:"🟢 SAFE",y:"🟡 THINK FIRST",r:"🔴 DANGER"};frame("traffic","🚦 Human Traffic Light",`<div class="card"><p class="mute">Read it aloud. Players move to a colour zone, then reveal.</p><p class="big">${q[0]}</p><div class="grid">${["g","y","r"].map(c=>`<button class="${c} big ${shown?(q[1].includes(c)?"ok":""):""}" style="min-height:90px;${shown&&!q[1].includes(c)?"opacity:.25":""}" onclick="shown=true;beep();VIEWS.traffic(true)">${L[c]}</button>`).join("")}</div>${shown?`<p><b>${q[1].map(c=>L[c]).join(" or ")}</b>. ${q[2]}</p><p>🗣️ Ask: “Why did you choose this colour?”</p>${awardRow("tr"+n,1)}`:`<p class="mute">Tap any colour to reveal the answer.</p>`}</div>${nav("traffic",TRAFFIC.length)}`,720)},
+
+password(r){if(!r)app.dataset.v="";const tabs=`<div class="row">${["1. Weak or Strong","2. Makeover","3. Why weak?"].map((t,i)=>`<button class="${phase===i+1?"primary":""}" onclick="phase=${i+1};n=0;shown=false;votes={};VIEWS.password(true)">${t}</button>`).join("")}</div>`;let b="";
+if(phase===1){b=`<div class="card"><p>Sort every card, then check.</p>${CARDS.map((c,i)=>`<div class="score ${shown?(sorted[i]===c[1]?"ok":"no"):""}"><span class="mono">${c[0]}</span><span><button class="${sorted[i]==="w"?"sel":""}" onclick="pick(${i},'w')">Weak</button> <button class="${sorted[i]==="s"?"sel":""}" onclick="pick(${i},'s')">Stronger</button></span></div>`).join("")}<div class="row"><button class="primary" onclick="shown=true;VIEWS.password(true)">Check answers</button><button onclick="sorted={};shown=false;VIEWS.password(true)">Next team: clear</button></div>${shown?`<p class="big">${CARDS.filter((c,i)=>sorted[i]===c[1]).length} / ${CARDS.length} correct</p><p>Never use these example passwords for a real account.</p>`:""}${awardRow("pw1",1,"Correct classification")}</div>`}
+if(phase===2){b=`<div class="card"><p>Make <span class="mono big">cat123</span> longer and harder to guess.</p><p>⚠️ Make one up. <b>Never type a real password.</b></p><input style="width:100%" class="mono" autocomplete="off" spellcheck="false" aria-label="Pretend password" placeholder="Type a pretend password" oninput="meterUp(this.value)"><meter id="m" min="0" max="5" low="3" high="4" optimum="5" value="0"></meter><p id="tips">Aim for 12 or more characters.</p><p class="mute">This is a simple practice checklist, not a real security test.</p>${awardRow("pw2e",2,"Good explanation")}${awardRow("pw2c",3,"Creative strong pretend password")}</div>`}
+if(phase===3){const q=WHY[n];b=`<div class="card"><p>Why is this password weak?</p><p class="big mono">${q[0]}</p>${options(q[1],q[2],"password")}${shown?awardRow("pw3"+n,2,"Correct explanation"):""}</div>${nav("password",WHY.length)}`}
+frame("password","🔐 Password Master",tabs+b,720)},
+
+stranger(r){if(!r)app.dataset.v="";const q=STRANGER[n];frame("stranger","🕵️ Stranger Danger",`<div class="card"><p class="big">${q[0]}</p>${options(q[1],q[2],"stranger")}${shown?awardRow("st"+n,1)+`<p>🚩 Bonus: what is the biggest red flag? Count the red flags each team finds.</p>${awardRow("stb"+n,1,"Team with the most red flags")}<p><b>STOP → BLOCK → REPORT → TELL</b></p>`:""}</div>${nav("stranger",STRANGER.length)}`,720)},
+
+escape(r){if(!r){app.dataset.v="";frame("escape","🔓 Cyber Safety Escape","",480);endHook=()=>{if(digits.length<4){phase=0;VIEWS.escape(true)}}}let b;
+if(phase===0)b=`<div class="card"><p class="big">⏰ Time is up! The shield is still locked.</p><button onclick="open_('escape')">Try again</button></div>`;
+else if(digits.length<3){const q=ESCAPE[digits.length];b=`<div class="card"><p>The Cyber Shield is locked! Solve 3 puzzles to find the code.</p><div class="row"><label>Playing team <select onchange="team=+this.value" ${digits.length?"disabled":""}>${S.teams.map((t,i)=>`<option value="${i}" ${i===team?"selected":""}>${esc(t)}</option>`).join("")}</select></label></div><p class="big">${q[0]}</p><div class="stack">${q[1].map((o,i)=>`<button onclick="solve(${i})">${o}</button>`).join("")}</div><p id="msg" role="status"></p><p>Code so far: <span class="big">${digits.join(" ")||"– – –"}</span></p></div>`}
+else if(digits.length===3)b=`<div class="card"><p>Enter the 3-digit code.</p><div class="row"><input id="code" inputmode="numeric" maxlength="3" aria-label="Code"><button class="primary" onclick="unlock()">Unlock</button></div><p class="mute">Your digits in order: ${digits.join(" – ")}</p><p id="msg" role="status"></p></div>`;
+else b=`<div class="card" style="text-align:center"><div style="font-size:5rem">🛡️</div><p class="big">Shield activated! ${esc(S.teams[team])} are Cyber Guardians!</p><p>Time left: ${fmt(left)}</p><button onclick="open_('escape')">Next team</button> <button onclick="go('scores')">See scores</button></div>`;
+frame("escape","🔓 Cyber Safety Escape",b,480)},
+
+pledge(){app.dataset.v="";page("🤝 Cyber Safety Pledge",`<div class="card big"><p>I promise to:</p><p>🔒 Keep my passwords and personal information private.</p><p>🤔 Think before I believe, click or share.</p><p>💙 Be kind online.</p><p>🗣️ Tell a trusted adult when something feels wrong.</p></div><button class="primary" onclick="beep(1200,.4);this.textContent='🛡️ Pledge taken. Well done, Cyber Guardians!'">We pledge!</button>`)}
+};
+
+function options(list,correct,view){return `<div class="stack">${list.map((o,i)=>`<button class="${shown&&i===correct?"g ok":shown&&votes.pick===i?"r":""}" ${shown?"disabled":""} onclick="votes.pick=${i};shown=true;beep(${i===correct?990:250});VIEWS.${view}(true)">${"ABC"[i]}. ${o}</button>`).join("")}</div>`}
+function pick(i,a){sorted[i]=a;shown=false;VIEWS.password(true)}
+function meterUp(v){const tests=[[v.length>=12,"12+ characters"],[/[a-z]/.test(v)&&/[A-Z]/.test(v),"big and small letters"],[/\d/.test(v),"a number"],[/[^A-Za-z0-9]/.test(v),"a symbol"],[v.length>0&&!/(123|password|qwerty|abc|cat123|20[0-2]\d)/i.test(v),"no common pattern or year"]];$("m").value=tests.filter(t=>t[0]).length;const miss=tests.filter(t=>!t[0]).map(t=>t[1]);$("tips").textContent=miss.length?"Still needed: "+miss.join(", "):"Great practice password! Do not reuse it for a real account."}
+function lookTimer(b){let s=10;b.disabled=true;const id=setInterval(()=>{if(!b.isConnected){clearInterval(id);return}s--;$("look").textContent=s>0?s:"Vote now!";if(s<=0){clearInterval(id);beep()}},1000);$("look").textContent=s}
+function revealAI(){shown=true;const a=PICTURES[n].answer;Object.keys(votes).forEach(i=>{if(votes[i]===a)award(+i,1,"ai"+n+"-"+i)});beep();VIEWS.ai(true)}
+function loadPics(files){const list=[...files].filter(f=>/^(ai|real)/i.test(f.name)).map(f=>({src:URL.createObjectURL(f),answer:/^ai/i.test(f.name)?"AI":"REAL",clue:""}));if(!list.length){alert("File names must start with 'ai' or 'real'.");return}PICTURES=list.sort(()=>Math.random()-.5);n=0;VIEWS.ai(true)}
+function solve(i){const q=ESCAPE[digits.length];if(left<=0)return;if(i!==q[2]){beep(200,.3);$("msg").textContent="Not quite. Talk to your team and try again.";return}if(!tick)start();award(team,1,"es"+digits.length+"-"+team);digits.push(q[3]);VIEWS.escape(true)}
+function unlock(){if($("code").value.trim()!==digits.join("")){beep(200,.3);$("msg").textContent="Wrong code. Check the order.";return}const inTime=left>0;stop();if(inTime)award(team,2,"esb-"+team);digits.push("open");beep(1200,.5);VIEWS.escape(true)}
+function addTeam(){if(S.teams.length>=8)return;S.teams.push("Team "+(S.teams.length+1));S.scores.push(0);save();VIEWS.scores()}
+function removeTeam(){if(S.teams.length<=2||!confirm("Remove the last team and its score?"))return;const i=S.teams.length-1;S.teams.pop();S.scores.pop();Object.keys(S.done).forEach(k=>{if(k.endsWith("-"+i))delete S.done[k]});team=0;save();VIEWS.scores()}
+function resetAll(){if(!confirm("Reset all scores for a new session?"))return;S.scores=S.teams.map(()=>0);S.done={};save();VIEWS.scores()}
+go("home");
+</script>
+</body>
+</html>
