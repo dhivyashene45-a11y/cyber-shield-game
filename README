@@ -1,0 +1,42 @@
+# Cyber Shield: AI & Online Safety Game
+
+A facilitator-led team game for participants aged 10–13. It has five activities, a pledge, timers and a scoreboard.
+
+## Launch on GitHub Pages
+1. Sign in to github.com and create a new **public** repository, for example `cyber-shield-game`.
+2. Choose **Add file → Upload files**, upload `index.html` and `README.md`, then **Commit changes**. Keep the name `index.html`.
+3. Open **Settings → Pages**.
+4. Under **Build and deployment**, set Source to **Deploy from a branch**, Branch to **main** and folder to **/(root)**. Click **Save**.
+5. Wait a few minutes. Your link will be `https://YOUR-USERNAME.github.io/cyber-shield-game/`.
+
+## Add the "AI or Real?" pictures
+No pictures are included. Prepare 8–10 that you are allowed to publish. Avoid identifiable people, especially children, unless you have permission.
+
+1. Upload them to a folder named `images`. Use neutral names such as `01.jpg`, so the name does not give away the answer.
+2. In `index.html`, find `let PICTURES = [` and add one line per picture:
+
+```js
+{src:"images/01.jpg", answer:"REAL", clue:"Photo taken by our team"},
+{src:"images/02.jpg", answer:"AI", clue:"Made with an AI image tool"},
+```
+
+`answer` must be exactly `"AI"` or `"REAL"`. File names are case-sensitive.
+
+For a quick test without editing, use the file picker in the game. Those file names must start with `ai` or `real`, and the pictures are cleared when the page reloads. Do not let players see the file picker.
+
+## Running the event
+- Use one facilitator device connected to the projector.
+- Set team names (2–8) under **Scores** before starting.
+- Press **Reset scores** before each new session.
+- Scores stay in that browser only. There is no shared live leaderboard.
+
+## Scoring
+| Activity | Points |
+|---|---|
+| AI or Real? | 1 per correct vote (automatic) |
+| Traffic Light | 1 per correct team |
+| Password Master | Classification 1, explanation 2, creative password 3 |
+| Stranger Danger | 1 per correct team, plus 1 red flag bonus |
+| Escape Challenge | 1 per puzzle, plus 2 for unlocking in time |
+
+Each award button works once per question per team. In Password Master rounds 1 and 2, that means once per round. Use the +1 / −1 buttons under Scores for anything extra.
